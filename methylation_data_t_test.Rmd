@@ -1,0 +1,22 @@
+---
+title: "Analysis of Methylation Data"
+author: "BIS 15L Group 5 Rithanya Siva"
+date: "2025-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+read_csv("~/Downloads/BIS15W2025_group5/PDmethDB_Data_20250227-202207.csv")
+```
+
+
