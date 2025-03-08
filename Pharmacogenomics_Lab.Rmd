@@ -1,0 +1,66 @@
+---
+title: "Pharmacogenomics Lab"
+output:
+  html_document:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+## Project Goals
+1. How does Gene ABCB1 associate with different diseases?
+2. How strong is the evidence for the association between Variant X and different disease?  
+
+##Resources  
+- [Warfarin data](https://www.pharmgkb.org/downloads)  
+
+## Load the libraries
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+## Data
+```{r}
+relations <- read_tsv("data/relationships.tsv") %>% clean_names()
+```
+
+```{r}
+names(relations)
+glimpse(relations)
+```
+
+1. Find the most common gene as entity 1.
+```{r}
+relations %>% 
+  filter(entity1_type == "Gene") %>% 
+  count(entity1_name, sort = T)
+
+# The most common gene appears to be ABCB1!
+```
+
+2. Filter the data set to have only the data we want.
+```{r}
+filtered_relations <- relations %>% 
+  select(-pk, -pd) %>% 
+  filter(entity1_name == "ABCB1" & entity2_type == "Disease" & association == "associated")
+```
+
+3. Count the number of diseases
+```{r}
+disease_count <- filtered_relations %>% 
+  count(entity2_name, sort = T)
+```
+
+4. Visualize the significance.
+```{r}
+ggplot(disease_count, aes(x = reorder(entity2_name, n), y = n)) +
+  geom_bar(stat = "identity", fill = "hotpink") +
+  coord_flip() +
+  labs(title = "Diseases Associated with ABCB1",
+       x = "Disease",
+       y = "Number of Associations") +
+  theme_minimal()
+```
