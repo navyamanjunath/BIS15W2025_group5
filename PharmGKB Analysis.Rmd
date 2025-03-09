@@ -24,13 +24,16 @@ library(dplyr)
 
 #Data
 ```{r}
-relations <- read_tsv("data/relationships.tsv")
+relations <- read_tsv("data/relationships.tsv") %>% clean_names()
 ```
+
+#Dataframe with only variant genes and diseases
 ```{r}
 variant_disease <- relations %>% 
   filter(entity1_type == "Variant" & entity2_type == "Disease")
 ```
 
+#Percentage of association between variant genes and diseases
 ```{r}
 variant_disease %>% 
   group_by(association) %>%
@@ -38,6 +41,8 @@ variant_disease %>%
   mutate(percentage = (count / sum(count)) * 100) %>% 
   arrange(-count)
 ```
+
+#Percentage of association between regular genes and diseases
 ```{r}
 relations %>% 
   filter(entity1_type == "Gene" & entity2_type == "Disease") %>% 
@@ -46,7 +51,6 @@ relations %>%
   mutate(percentage = (count / sum(count)) * 100) %>% 
   arrange(-count)
 ```
-
 
 #Which gene is most associated with having a relationship with a disease?
 ```{r}
@@ -59,6 +63,7 @@ variant_disease %>%
 ```
 The presence of the variant rs1045642 gene is most associated with having a disease out of all the other variant genes.
 
+#Graph of genes most associated with having a relationship with a disease
 ```{r}
 variant_disease %>% 
   group_by(entity1_name, association) %>%
@@ -76,7 +81,6 @@ variant_disease %>%
   scale_fill_brewer(palette = "Paired")
   theme_light()
 ```
-
 #Which diseases is the rs1045642 gene associated with?
 ```{r}
 variant_disease %>% 
@@ -92,6 +96,8 @@ variant_disease %>%
   mutate(percentage = (count / sum(count)) * 100) %>% 
   arrange(-percentage)
 ```
+
+#Graph of most associated diseases 
 ```{r}
 variant_disease %>% 
   group_by(entity2_name, association) %>%
@@ -109,4 +115,15 @@ variant_disease %>%
   scale_fill_brewer(palette = "Paired")
   theme_light()
 ```
+
+#Comparing amount of evidence for associated vs. not associated interactions
+```{r}
+ev_assoc <- variant_disease %>% 
+  separate_rows(pmi_ds, sep = ";") %>% 
+  group_by(association) %>%
+  summarize(pmid_count = n())
+
+head(ev_assoc)
+```
+
 
