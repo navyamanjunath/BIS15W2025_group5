@@ -64,3 +64,32 @@ ggplot(disease_count, aes(x = reorder(entity2_name, n), y = n)) +
        y = "Number of Associations") +
   theme_minimal()
 ```
+
+5. Categorize the diseases
+```{r}
+disease_count <- disease_count %>%
+  mutate(Category = case_when(
+    grepl("cancer|carcinoma|lymphoma|tumor", entity2_name, ignore.case = TRUE) ~ "Cancer",
+    grepl("diabetes", entity2_name, ignore.case = TRUE) ~ "Metabolic",
+    grepl("hypertension|cardiac|coronary|arrhythmia", entity2_name, ignore.case = TRUE) ~ "Cardiovascular",
+    grepl("autism|attention deficit|nervous system", entity2_name, ignore.case = TRUE) ~ "Neurological",
+    TRUE ~ "Other"
+  ))
+
+# Count number of diseases per category
+category_counts <- disease_count %>%
+  count(Category, sort = TRUE)
+
+# Plot disease categories
+ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
+  geom_bar(stat = "identity", fill = "hotpink") +
+  coord_flip() +
+  labs(title = "Disease Categories Associated with ABCB1",
+       x = "Disease Category",
+       y = "Number of Associations") +
+  theme_minimal()
+
+# ABCB1 is associated with a wide variety of diseases that don’t fit into common categories like cancer, cardiovascular, neurological, or metabolic diseases.
+
+# ABCB1 is known for its role in drug transport and multidrug resistance, meaning it might be linked to diverse conditions rather than a specific disease class.
+```
