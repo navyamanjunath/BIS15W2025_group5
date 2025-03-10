@@ -51,6 +51,7 @@ ggplot(pa_gene_disease, aes(x = "", y = percentage, fill = association)) +
   coord_polar("y", start = 0) +
   labs(title = "Percentage of Association Types between Genes and Diseases",
        fill= "Type of Association") +
+  scale_fill_brewer(palette = "Paired")+
   theme_void()
 ```
 
@@ -104,7 +105,7 @@ category_counts <- disease_count %>%
 
 # Plot disease categories
 ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
-  geom_bar(stat = "identity", fill = "darkcyan") +
+  geom_bar(stat = "identity", fill = "steelblue") +
   coord_flip() +
   labs(title = "Disease Categories Associated with ABCB1",
        x = "Disease Category",
