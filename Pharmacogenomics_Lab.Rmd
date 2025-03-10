@@ -16,8 +16,17 @@ output:
 ##Resources  
 - [Warfarin data](https://www.pharmgkb.org/downloads)  
 
+## Install the packages
+```{r}
+if(!requireNamespace("BiocManager")){
+  install.packages("BiocManager")
+}
+BiocManager::install("biomaRt")
+```
+
 ## Load the libraries
 ```{r}
+library(biomaRt)
 library(tidyverse)
 library(janitor)
 ```
@@ -71,12 +80,12 @@ category_counts <- disease_count %>%
 
 # Plot disease categories
 ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_bar(stat = "identity", fill = "hotpink") +
   coord_flip() +
   labs(title = "Disease Categories Associated with ABCB1",
        x = "Disease Category",
        y = "Number of Associations") +
-  theme_light()
+  theme_minimal()
 
 # ABCB1 is associated with a wide variety of diseases that don’t fit into common categories like cancer, cardiovascular, neurological, or metabolic diseases.
 
@@ -126,8 +135,7 @@ ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, 
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  scale_fill_brewer(palette = "Paired")+
-  theme_light()
+  theme_minimal()
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
@@ -139,13 +147,39 @@ ggplot(cancer_disease_evidence_counts, aes(x = "Disease", y = n, fill = evidence
   coord_polar(theta = "y") +
   labs(title = "Distribution of Evidence Types for Cancer-Related Diseases",
        fill = "Evidence Type") +
-  scale_fill_brewer(palette = "Paired")+
-  theme_void()
+  theme_minimal()
 ```
 
 
 9. Conclusion
 ```{r}
 # Basically Lymphoma is more well supported by clinical and variant evidence, and is linked to the gene of interest. It implies that there is a strong genetic link between Lymphoma and ABCB1.
+```
+
+10. Association with variant
+```{r}
+# Connect to Ensembl
+ensembl <- useMart(biomart = "ENSEMBL_MART_SNP", dataset = "hsapiens_snp")
+
+variant_info <- getBM(
+  attributes = c("refsnp_id", "chr_name", "chrom_start", "ensembl_gene_stable_id"),
+  filters = "snp_filter",
+  values = "rs1045642",  # Replace with your variant ID
+  mart = ensembl
+)
+
+#print(variant_info)
+
+ensembl_genes <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+
+# Get the HGNC symbol for the Ensembl gene ID
+gene_info <- getBM(
+  attributes = c("ensembl_gene_id", "hgnc_symbol"),
+  filters = "ensembl_gene_id",
+  values = "ENSG00000085563",  # Your gene ID
+  mart = ensembl_genes
+)
+
+print(gene_info)
 ```
 
