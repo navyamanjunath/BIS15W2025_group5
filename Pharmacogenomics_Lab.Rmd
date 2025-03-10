@@ -38,7 +38,7 @@ relations %>%
   filter(entity1_type == "Gene") %>% 
   count(entity1_name, sort = T)
 
-# The most common gene appears to be ABCB1!
+# The most common gene appears to be ABCB1! (gene with the most data comparisons)
 ```
 
 2. Filter the data set to have only the data we want.
@@ -54,7 +54,7 @@ disease_count <- filtered_relations %>%
   count(entity2_name, sort = T)
 ```
 
-4. Visualize the significance.
+4. Visualize the significance. #should we get rid of this one?
 ```{r}
 ggplot(disease_count, aes(x = reorder(entity2_name, n), y = n)) +
   geom_bar(stat = "identity", fill = "hotpink") +
@@ -141,4 +141,14 @@ ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, 
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
+```{r}
+ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Cancer-Related Diseases Vs. Evidence Types",
+       x = "Disease",
+       y = "Number of Associations",
+       fill = "Evidence Type") +
+  theme_minimal()
 
+#Gives alternate more of quantitative result: how many of these associations are each type of evidence
+```
