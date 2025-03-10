@@ -177,3 +177,7 @@ ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)
 
 #Gives alternate more of quantitative result: how many of these associations are each type of evidence
 ```
+```{r}
+
+```
+
