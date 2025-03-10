@@ -9,3 +9,65 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Load the libraries
+```{r}
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(shiny)
+library(shinydashboard)
+require(janitor)
+```
+
+#Data
+```{r}
+relations <- read_tsv("data/relationships.tsv") %>% clean_names()
+```
+
+```{r, eval=F, echo=T}
+ui <- dashboardPage(
+  
+  dashboardHeader(title = "Penguins"),
+  
+  dashboardSidebar(disable=T),
+  
+  dashboardBody(
+  
+    fluidRow(
+      box(title = "Plot Options", 
+          width = 3, #adjust the column width
+        
+        selectInput("x", 
+                    "Select X Variable", 
+                    choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
+                    selected = "bill_length_mm"),
+        
+        selectInput("y", 
+                    "Select Y Variable", 
+                    choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
+                    selected = "bill_depth_mm"),
+
+), # close the first box    
+
+box(title = "Plot of Penguins Data", width = 6, #adjust the column width and add title
+  plotOutput("plot", width = "500px", height = "400px")
+) # close the second box
+) # close the row
+) # close the dashboard body
+) # close the ui
+
+server <- function(input, output, session) {
+  
+  session$onSessionEnded(stopApp) # stop the app when we close it
+  
+  output$plot <- renderPlot({
+  
+    ggplot(data=penguins, 
+           aes_string(x = input$x, y = input$y, color="species")) + 
+      geom_point() + 
+      theme_light()
+    })
+}
+
+shinyApp(ui, server)
+```

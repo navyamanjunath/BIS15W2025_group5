@@ -22,7 +22,7 @@ library(tidyverse)
 library(janitor)
 ```
 
-## Data
+## Dataa
 ```{r}
 relations <- read_tsv("data/relationships.tsv") %>% clean_names()
 ```
