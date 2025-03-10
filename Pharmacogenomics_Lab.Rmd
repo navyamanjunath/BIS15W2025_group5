@@ -22,7 +22,7 @@ library(tidyverse)
 library(janitor)
 ```
 
-## Dataa
+## Data
 ```{r}
 relations <- read_tsv("data/relationships.tsv") %>% clean_names()
 ```
@@ -32,36 +32,13 @@ names(relations)
 glimpse(relations)
 ```
 
-#Percentage of association between regular genes and diseases
-```{r}
-pa_gene_disease <- relations %>% 
-  filter(entity1_type == "Gene" & entity2_type == "Disease") %>% 
-  group_by(association) %>%
-  summarise(count = n(), .groups = 'drop') %>%
-  mutate(percentage = (count / sum(count)) * 100) %>% 
-  arrange(-count)
-pa_gene_disease
-```
-
-
-#Graph of percentage of association between variant genes and diseases
-```{r}
-ggplot(pa_gene_disease, aes(x = "", y = percentage, fill = association)) +
-  geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) +
-  labs(title = "Percentage of Association Types between Genes and Diseases",
-       fill= "Type of Association") +
-  scale_fill_brewer(palette = "Paired")+
-  theme_void()
-```
-
 1. Find the most common gene as entity 1.
 ```{r}
 relations %>% 
   filter(entity1_type == "Gene") %>% 
   count(entity1_name, sort = T)
 
-# The most common gene appears to be ABCB1! (gene with the most data comparisons)
+# The most common gene appears to be ABCB1!
 ```
 
 2. Filter the data set to have only the data we want.
@@ -77,18 +54,7 @@ disease_count <- filtered_relations %>%
   count(entity2_name, sort = T)
 ```
 
-4. Visualize the significance. #should we get rid of this one?
-```{r}
-ggplot(disease_count, aes(x = reorder(entity2_name, n), y = n)) +
-  geom_bar(stat = "identity", fill = "hotpink") +
-  coord_flip() +
-  labs(title = "Diseases Associated with ABCB1",
-       x = "Disease",
-       y = "Number of Associations") +
-  theme_minimal()
-```
-
-5. Categorize the diseases
+4. Categorize the diseases
 ```{r}
 disease_count <- disease_count %>%
   mutate(Category = case_when(
@@ -105,7 +71,7 @@ category_counts <- disease_count %>%
 
 # Plot disease categories
 ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_bar(stat = "identity", fill = "hotpink") +
   coord_flip() +
   labs(title = "Disease Categories Associated with ABCB1",
        x = "Disease Category",
@@ -119,7 +85,7 @@ ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
 # to show evidence type, filter out clinical or variant, focus with cancer
 ```
 
-6. Analyze cancer
+5. Analyze cancer
 ```{r}
 # Filter cancer-related diseases and exclude "clinical" or "variant" evidence types
 cancer_evidence <- filtered_relations %>%
@@ -134,7 +100,7 @@ cancer_evidence <- filtered_relations %>%
 ```
 
 
-7. Get the Table for cancer associated with its evidence
+6. Get the Table for cancer associated with its evidence
 ```{r}
 cancer_disease_evidence <- cancer_evidence %>%
   select(entity2_name, evidence) %>%
@@ -151,7 +117,7 @@ cancer_disease_evidence_counts <- cancer_evidence %>%
 head(cancer_disease_evidence_counts)
 ```
 
-8. Plotting the result
+7. Plotting the result
 ```{r}
 ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, fill = evidence)) +
   geom_bar(stat = "identity") +
@@ -160,24 +126,24 @@ ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, 
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  scale_fill_brewer(palette = "Paired")+
-  theme_light()
+  theme_minimal()
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
+
+8. PI Chart
 ```{r}
-ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Cancer-Related Diseases Vs. Evidence Types",
-       x = "Disease",
-       y = "Number of Associations",
+ggplot(cancer_disease_evidence_counts, aes(x = "Disease", y = n, fill = evidence)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Distribution of Evidence Types for Cancer-Related Diseases",
        fill = "Evidence Type") +
-  scale_fill_brewer(palette = "Paired")+
-  theme_light()
-
-#Gives alternate more of quantitative result: how many of these associations are each type of evidence
+  theme_minimal()
 ```
-```{r}
 
+
+9. Conclusion
+```{r}
+# Basically Lymphoma is more well supported by clinical and variant evidence, and is linked to the gene of interest. It implies that there is a strong genetic link between Lymphoma and ABCB1.
 ```
 
