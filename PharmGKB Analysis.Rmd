@@ -125,5 +125,17 @@ ev_assoc <- variant_disease %>%
 
 head(ev_assoc)
 ```
+#analysis of clinical vs. variant annotation
+```{r}
+variant_disease %>% 
+  group_by(evidence) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  mutate(percentage_e = (count / sum(count)) * 100) %>% 
+  arrange(-count)
+```
+
+#count the number of evidences for each category of disease 
+
+#assign priority/ranking to each evidence type based off of clinical vs. variant vs. both annotation — make a plot based off of that (NOT BAR)
 
 
