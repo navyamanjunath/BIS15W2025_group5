@@ -48,10 +48,13 @@ pa_variant_disease
 ggplot(pa_variant_disease, aes(x = "", y = percentage, fill = association)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y", start = 0) +
-  labs(title = "Percentage of Association Types between Variant Genes and Diseases",
+  labs(title = "Association Types between Variant Genes and Diseases",
        fill= "Type of Association") +
   scale_fill_brewer(palette = "Paired")+
-  theme_void()
+  theme_void()+
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),  # Adding percentage labels
+            position = position_stack(vjust = 0.5),             # Centers the labels
+            color = "white", size = 4)
 ```
 
 
@@ -164,12 +167,11 @@ annotation_count_vd <- variant_disease %>%
   arrange(-count)
 annotation_count_vd
 ```
-#Cancer
 
-7. Get the Table for cancer associated with its evidence
+#Cancer
 ```{r}
 # Filter cancer-related diseases and exclude "clinical" or "variant" evidence types
-cancer_evidence <- variant_disease %>%
+cancer_evidence_v <- variant_disease %>%
   mutate(Category = case_when(
     grepl("cancer|carcinoma|lymphoma|tumor", entity2_name, ignore.case = TRUE) ~ "Cancer",
     grepl("diabetes", entity2_name, ignore.case = TRUE) ~ "Metabolic",
@@ -181,22 +183,23 @@ cancer_evidence <- variant_disease %>%
 ```
 
 ```{r}
-cancer_disease_evidence <- cancer_evidence %>%
+cancer_disease_evidence_v <- cancer_evidence_v %>%
   select(entity2_name, evidence) %>%
   arrange(entity2_name)
 
 # View the first few rows
-head(cancer_disease_evidence)
+head(cancer_disease_evidence_v)
 
 # Count number of times each (disease, evidence) pair appears
-cancer_disease_evidence_counts <- cancer_evidence %>%
+cancer_disease_evidence_counts_v <- cancer_evidence_v %>%
   count(entity2_name, evidence, sort = TRUE)
 
 # Check the counts
-head(cancer_disease_evidence_counts)
+head(cancer_disease_evidence_counts_v)
 ```
+#Graph of cancers vs. evidence associated in filtered dataset (variant genes and disease)
 ```{r}
-ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, fill = evidence)) +
+ggplot(cancer_disease_evidence_counts_v, aes(x = reorder(entity2_name, n), y = n, fill = evidence)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   labs(title = "Cancer-Related Diseases Vs. Evidence Types",
@@ -209,19 +212,19 @@ ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
 
+#Graph of evidence types and count in filtered dataset (variant genes and disease)
 ```{r}
 ggplot(annotation_count_vd, aes(x = evidence, y = count, fill = evidence)) +
   geom_bar(stat="identity") +
-  labs(title = "Cancer-Related Diseases Vs. Evidence Types",
-       x = "Disease",
-       y = "Number of Associations",
-       fill = "Evidence Type") +
+  scale_y_log10()+
+  labs(title = "Evidence Types",
+       x = "Evidence Type",
+       y = "Count")+
     theme(axis.text.x = element_text(angle = 60, hjust = 1))+
-    scale_fill_brewer(palette = "Paired")
+    scale_fill_brewer(palette = "Paired")+
+  theme(legend.position = "none")
 
 #Gives alternate more of quantitative result: how many of these associations are each type of evidence
 ```
-
-#assign priority/ranking to each evidence type based off of clinical vs. variant vs. both annotation — make a plot based off of that (NOT BAR)
 
 
