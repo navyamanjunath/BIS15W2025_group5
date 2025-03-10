@@ -71,12 +71,12 @@ category_counts <- disease_count %>%
 
 # Plot disease categories
 ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
-  geom_bar(stat = "identity", fill = "hotpink") +
+  geom_bar(stat = "identity", fill = "steelblue") +
   coord_flip() +
   labs(title = "Disease Categories Associated with ABCB1",
        x = "Disease Category",
        y = "Number of Associations") +
-  theme_minimal()
+  theme_light()
 
 # ABCB1 is associated with a wide variety of diseases that don’t fit into common categories like cancer, cardiovascular, neurological, or metabolic diseases.
 
@@ -126,7 +126,8 @@ ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, 
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  theme_minimal()
+  scale_fill_brewer(palette = "Paired")+
+  theme_light()
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
@@ -138,7 +139,8 @@ ggplot(cancer_disease_evidence_counts, aes(x = "Disease", y = n, fill = evidence
   coord_polar(theta = "y") +
   labs(title = "Distribution of Evidence Types for Cancer-Related Diseases",
        fill = "Evidence Type") +
-  theme_minimal()
+  scale_fill_brewer(palette = "Paired")+
+  theme_void()
 ```
 
 
