@@ -171,8 +171,7 @@ ggplot(annotation_count_vd, aes(x = evidence, y = count, fill = evidence)) +
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  theme(axis.text.x = element_text(angle = 60, hjust=1))+ #how do i fix this?
-  theme_minimal()
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
 #Gives alternate more of quantitative result: how many of these associations are each type of evidence
 ```
