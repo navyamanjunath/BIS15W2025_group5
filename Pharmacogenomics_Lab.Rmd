@@ -92,4 +92,53 @@ ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
 # ABCB1 is associated with a wide variety of diseases that don’t fit into common categories like cancer, cardiovascular, neurological, or metabolic diseases.
 
 # ABCB1 is known for its role in drug transport and multidrug resistance, meaning it might be linked to diverse conditions rather than a specific disease class.
+
+# to show evidence type, filter out clinical or variant, focus with cancer
 ```
+
+6. Analyze cancer
+```{r}
+# Filter cancer-related diseases and exclude "clinical" or "variant" evidence types
+cancer_evidence <- filtered_relations %>%
+  mutate(Category = case_when(
+    grepl("cancer|carcinoma|lymphoma|tumor", entity2_name, ignore.case = TRUE) ~ "Cancer",
+    grepl("diabetes", entity2_name, ignore.case = TRUE) ~ "Metabolic",
+    grepl("hypertension|cardiac|coronary|arrhythmia", entity2_name, ignore.case = TRUE) ~ "Cardiovascular",
+    grepl("autism|attention deficit|nervous system", entity2_name, ignore.case = TRUE) ~ "Neurological",
+    TRUE ~ "Other"
+  )) %>%
+  filter(Category == "Cancer")
+```
+
+
+7. Get the Table for cancer associated with its evidence
+```{r}
+cancer_disease_evidence <- cancer_evidence %>%
+  select(entity2_name, evidence) %>%
+  arrange(entity2_name)
+
+# View the first few rows
+head(cancer_disease_evidence)
+
+# Count number of times each (disease, evidence) pair appears
+cancer_disease_evidence_counts <- cancer_evidence %>%
+  count(entity2_name, evidence, sort = TRUE)
+
+# Check the counts
+head(cancer_disease_evidence_counts)
+```
+
+8. Plotting the result
+```{r}
+ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, fill = evidence)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Cancer-Related Diseases Vs. Evidence Types",
+       x = "Disease",
+       y = "Number of Associations",
+       fill = "Evidence Type") +
+  theme_minimal()
+
+# Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
+```
+
