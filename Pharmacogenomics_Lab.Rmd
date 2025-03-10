@@ -104,7 +104,7 @@ category_counts <- disease_count %>%
 
 # Plot disease categories
 ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
-  geom_bar(stat = "identity", fill = "hotpink") +
+  geom_bar(stat = "identity", fill = "darkcyan") +
   coord_flip() +
   labs(title = "Disease Categories Associated with ABCB1",
        x = "Disease Category",
@@ -159,7 +159,8 @@ ggplot(cancer_disease_evidence_counts, aes(x = reorder(entity2_name, n), y = n, 
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  theme_minimal()
+  scale_fill_brewer(palette = "Paired")+
+  theme_light()
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
@@ -170,7 +171,8 @@ ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  theme_minimal()
+  scale_fill_brewer(palette = "Paired")+
+  theme_light()
 
 #Gives alternate more of quantitative result: how many of these associations are each type of evidence
 ```

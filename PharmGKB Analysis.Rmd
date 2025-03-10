@@ -80,7 +80,7 @@ variant_disease %>%
        x = "Variant Gene",
        y = "Percentage (%)",
        fill = "Association Type") +
-  scale_fill_brewer(palette = "Paired")
+  scale_fill_brewer(palette = "Paired")+
   theme_light()
 ```
 
@@ -116,7 +116,7 @@ variant_disease %>%
        x = "Disease",
        y = "Percentage (%)",
        fill = "Association Type") +
-  scale_fill_brewer(palette = "Paired")
+  scale_fill_brewer(palette = "Paired")+
   theme_light()
 ```
 
@@ -140,7 +140,7 @@ ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
   labs(title = "Disease Categories Associated with Variant Genes",
        x = "Disease Category",
        y = "Number of Associations") +
-  theme_minimal()
+  theme_light()
 ```
 
 #Comparing amount of evidence for associated vs. not associated interactions
@@ -171,7 +171,8 @@ ggplot(annotation_count_vd, aes(x = evidence, y = count, fill = evidence)) +
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+    scale_fill_brewer(palette = "Paired")
 
 #Gives alternate more of quantitative result: how many of these associations are each type of evidence
 ```
