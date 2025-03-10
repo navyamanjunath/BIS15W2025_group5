@@ -27,45 +27,54 @@ relations <- read_tsv("data/relationships.tsv") %>% clean_names()
 ```{r, eval=F, echo=T}
 ui <- dashboardPage(
   
-  dashboardHeader(title = "Penguins"),
+  dashboardHeader(title = "PharmGKB Data Analysis"),
   
   dashboardSidebar(disable=T),
   
   dashboardBody(
   
     fluidRow(
-      box(title = "Plot Options", 
-          width = 3, #adjust the column width
+      box(title = "Comparison Plot Options", 
+          width = 3, 
         
         selectInput("x", 
-                    "Select X Variable", 
-                    choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
-                    selected = "bill_length_mm"),
+                    "Select Entity 1", 
+                    choices = c("Gene", "Haplotype", "Variant", "Disease", "Chemical"), 
+                    selected = "Gene"),
         
         selectInput("y", 
-                    "Select Y Variable", 
-                    choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
-                    selected = "bill_depth_mm"),
+                    "Select Entity 2", 
+                    choices = c("Gene", "Haplotype", "Variant", "Disease", "Chemical"), 
+                    selected = "Gene"),
 
-), # close the first box    
+),     
 
-box(title = "Plot of Penguins Data", width = 6, #adjust the column width and add title
+box(title = "Percentage of Association Types Plots", width = 6,
   plotOutput("plot", width = "500px", height = "400px")
-) # close the second box
-) # close the row
-) # close the dashboard body
-) # close the ui
+) 
+) 
+) 
+) 
 
 server <- function(input, output, session) {
   
-  session$onSessionEnded(stopApp) # stop the app when we close it
+  session$onSessionEnded(stopApp) 
   
   output$plot <- renderPlot({
+    
+    pa <- relations %>% 
+      filter(entity1_type == input$x & entity2_type == input$y) %>% 
+      group_by(association) %>%
+      summarise(count = n(), .groups = 'drop') %>%
+      mutate(percentage = (count / sum(count)) * 100)
+      
   
-    ggplot(data=penguins, 
-           aes_string(x = input$x, y = input$y, color="species")) + 
-      geom_point() + 
-      theme_light()
+    ggplot(pa, aes(x = "", y = percentage, fill = association)) +
+      geom_bar(stat = "identity", width = 1) +
+      coord_polar("y", start = 0) +
+      labs(title = "Percentage of Association Types between Entities",
+           fill= "Type of Association") +
+      theme_void()
     })
 }
 
