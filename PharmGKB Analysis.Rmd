@@ -72,12 +72,14 @@ variant_disease %>%
   scale_fill_brewer(palette = "Paired")
   theme_light()
 ```
+
 #Which diseases is the rs1045642 gene associated with?
 ```{r}
 variant_disease %>% 
   select(entity1_name, entity2_name, association) %>% 
   filter(entity1_name == "rs1045642" & association == "associated")
 ```
+
 #What diseases are most associated with variant genes?
 ```{r}
 variant_disease %>% 
@@ -107,6 +109,29 @@ variant_disease %>%
   theme_light()
 ```
 
+#Categorize diseases: MODIFY- innacurate
+```{r}
+disease_count_v <- variant_disease %>%
+  mutate(Category = case_when(
+    grepl("cancer|carcinoma|lymphoma|tumor", entity2_name, ignore.case = TRUE) ~ "Cancer",
+    grepl("diabetes", entity2_name, ignore.case = TRUE) ~ "Metabolic",
+    grepl("hypertension|cardiac|coronary|arrhythmia", entity2_name, ignore.case = TRUE) ~ "Cardiovascular",
+    grepl("autism|attention deficit|nervous system", entity2_name, ignore.case = TRUE) ~ "Neurological",
+    TRUE ~ "Other"
+  ))
+
+category_counts <- disease_count_v %>%
+  count(Category, sort = TRUE)
+
+ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
+  geom_bar(stat = "identity", fill = "darkcyan") +
+  coord_flip() +
+  labs(title = "Disease Categories Associated with Variant Genes",
+       x = "Disease Category",
+       y = "Number of Associations") +
+  theme_minimal()
+```
+
 #Comparing amount of evidence for associated vs. not associated interactions
 ```{r}
 ev_assoc <- variant_disease %>% 
@@ -116,7 +141,8 @@ ev_assoc <- variant_disease %>%
 
 head(ev_assoc)
 ```
-#analysis of clinical vs. variant annotation
+
+#Analysis of clinical vs. variant annotation
 ```{r}
 variant_disease %>% 
   group_by(evidence) %>%
