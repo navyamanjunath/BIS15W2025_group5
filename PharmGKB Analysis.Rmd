@@ -198,8 +198,13 @@ cancer_disease_evidence_counts_v <- cancer_evidence_v %>%
 head(cancer_disease_evidence_counts_v)
 ```
 #Graph of cancers vs. evidence associated in filtered dataset (variant genes and disease)
+
+#UPDATE ON MAIN
 ```{r}
-ggplot(cancer_disease_evidence_counts_v, aes(x = reorder(entity2_name, n), y = n, fill = evidence)) +
+top_5_cancer_disease_evidence_counts_v <- cancer_disease_evidence_counts_v %>%
+  top_n(10, n)
+
+ggplot(top_5_cancer_disease_evidence_counts_v, aes(x = reorder(entity2_name, n), y = n, fill = evidence)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   labs(title = "Cancer-Related Diseases Vs. Evidence Types",
