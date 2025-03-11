@@ -441,6 +441,7 @@ ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)
 
 ```{r}
 ui <- dashboardPage(
+  skin = ("green"),
   dashboardHeader(title = "Combined Analysis"),
   dashboardSidebar(
     sidebarMenu(
