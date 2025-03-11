@@ -94,7 +94,7 @@ ui <- dashboardPage(
                 box(
                   title = "Choose type of gene:", 
                   width = 3,
-                  selectInput("x2", 
+                  radioButtons("x2", 
                               "Select Entity 1", 
                               choices = c("cancer_disease_evidence_counts_v_rs", 
                                           "cancer_disease_evidence_counts"), 
@@ -116,7 +116,7 @@ server <- function(input, output, session) {
   
   session$onSessionEnded(stopApp)
   
-  # PharmGKB Analysis Plot
+  # PharmGKB Comparison Analysis Plot
   output$plot1 <- renderPlot({
     pa <- relations %>% 
       filter(entity1_type == input$x1 & entity2_type == input$y1) %>% 
