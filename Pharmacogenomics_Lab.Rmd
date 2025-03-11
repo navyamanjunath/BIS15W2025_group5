@@ -40,6 +40,29 @@ relations <- read_tsv("data/relationships.tsv") %>% clean_names()
 names(relations)
 glimpse(relations)
 ```
+```{r}
+pa_gene_disease <- relations %>% 
+  filter(entity1_type == "Gene" & entity2_type == "Disease") %>% 
+  group_by(association) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  mutate(percentage = (count / sum(count)) * 100) %>% 
+  arrange(-count)
+pa_gene_disease 
+```
+
+#Graph of percentage of association between variant genes and diseases
+```{r}
+ggplot(pa_gene_disease, aes(x = "", y = percentage, fill = association)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  labs(title = "Association Types between Genes and Diseases",
+       fill= "Type of Association") +
+  scale_fill_brewer(palette = "Paired")+
+  theme_void()+
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),  # Adding percentage labels
+            position = position_stack(vjust = 0.5),             # Centers the labels
+            color = "white", size = 4)
+```
 
 1. Find the most common gene as entity 1.
 ```{r}
