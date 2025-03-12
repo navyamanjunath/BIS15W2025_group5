@@ -40,6 +40,29 @@ relations <- read_tsv("data/relationships.tsv") %>% clean_names()
 names(relations)
 glimpse(relations)
 ```
+```{r}
+pa_gene_disease <- relations %>% 
+  filter(entity1_type == "Gene" & entity2_type == "Disease") %>% 
+  group_by(association) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  mutate(percentage = (count / sum(count)) * 100) %>% 
+  arrange(-count)
+pa_gene_disease 
+```
+
+#Graph of percentage of association between variant genes and diseases
+```{r}
+ggplot(pa_gene_disease, aes(x = "", y = percentage, fill = association)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  labs(title = "Association Types between Genes and Diseases",
+       fill= "Type of Association") +
+  scale_fill_brewer(palette = "Paired")+
+  theme_void()+
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),  # Adding percentage labels
+            position = position_stack(vjust = 0.5),             # Centers the labels
+            color = "white", size = 4)
+```
 
 1. Find the most common gene as entity 1.
 ```{r}
@@ -55,6 +78,41 @@ relations %>%
 filtered_relations <- relations %>% 
   select(-pk, -pd) %>% 
   filter(entity1_name == "ABCB1" & entity2_type == "Disease" & association == "associated")
+```
+
+```{r}
+f_relations <- relations %>% 
+  select(-pk, -pd) %>% 
+  filter(entity1_name == "ABCB1" & association == "associated")
+```
+
+#What diseases are most associated with variant genes?
+```{r}
+f_relations %>% 
+  group_by(entity1_name) %>%
+  filter(association == "associated") %>% 
+  summarise(count = n(), .groups = 'drop') %>%
+  mutate(percentage = (count / sum(count)) * 100) %>% 
+  arrange(-percentage)
+```
+
+#Graph of most associated diseases 
+```{r}
+f_relations %>% 
+  group_by(entity1_name, association) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  mutate(percentage = (count/sum(count)) * 100) %>%
+  arrange(-count) %>%
+  slice_max(order_by = count, n = 10) %>%
+  ggplot(aes(x = reorder(entity1_name, percentage), y = percentage, fill = association)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  coord_flip() +
+  labs(title = "Association Status by Gene",
+       x = "Disease",
+       y = "Percentage (%)",
+       fill = "Association Type") +
+  scale_fill_brewer(palette = "Paired")+
+  theme_light()
 ```
 
 3. Count the number of diseases
@@ -146,6 +204,7 @@ ggplot(cancer_disease_evidence_counts, aes(x = "Disease", y = n, fill = evidence
   coord_polar(theta = "y") +
   labs(title = "Distribution of Evidence Types for Cancer-Related Diseases",
        fill = "Evidence Type") +
+  scale_fill_brewer(palette = "Paired")+
   theme_minimal()
 ```
 
