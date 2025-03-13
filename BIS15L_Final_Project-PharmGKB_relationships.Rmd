@@ -145,7 +145,7 @@ head(cancer_disease_evidence_counts)
 ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)) +
   geom_bar(stat = "identity") +
   labs(title = "Cancer-Related Diseases Vs. Evidence Types",
-       x = "Disease",
+       x = "Evidence Type",
        y = "Number of Associations",
        fill = "Evidence Type") +
   scale_fill_brewer(palette = "Accent")+
