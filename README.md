@@ -95,5 +95,5 @@ This quick snapshot contextualizes the dataset’s scope before deeper explorati
 ## <font color="#0066CC">Contact & Feedback</font>
 
 For suggestions or questions:
-- **GitHub**: [rithanyas13](https://github.com/rithanyas13), [dchao3647](https://github.com/dchao3647), [rithanyas13](https://github.com/rithanyas13)
-- **Email**: [Rithanya Siva](mailto:rsivasubramanian@ucdavis.edu), [Dennis Chao](mailto:dcchao@ucdavis.edu), [Rithanya Siva](mailto:rsivasubramanian@ucdavis.edu)
+- **GitHub**: [rithanyas13](https://github.com/rithanyas13), [dchao3647](https://github.com/dchao3647), [navyamanjunath](https://github.com/navyamanjunath)
+- **Email**: [Rithanya Siva](mailto:rsivasubramanian@ucdavis.edu), [Dennis Chao](mailto:dcchao@ucdavis.edu), [Navya Manjunath](mailto:namanjunath@ucdavis.edu)
