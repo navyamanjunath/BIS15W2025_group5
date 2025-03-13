@@ -57,7 +57,7 @@ ggplot(pa_gene_disease, aes(x = "", y = percentage, fill = association)) +
   coord_polar("y", start = 0) +
   labs(title = "Association Types between Genes and Diseases",
        fill= "Type of Association") +
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_brewer(palette = "Accent")+
   theme_void()+
   geom_text(aes(label = paste0(round(percentage, 1), "%")),  # Adding percentage labels
             position = position_stack(vjust = 0.5),             # Centers the labels
@@ -111,7 +111,7 @@ f_relations %>%
        x = "Disease",
        y = "Percentage (%)",
        fill = "Association Type") +
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_brewer(palette = "Accent")+
   theme_light()
 ```
 
@@ -204,8 +204,8 @@ ggplot(cancer_disease_evidence_counts, aes(x = "Disease", y = n, fill = evidence
   coord_polar(theta = "y") +
   labs(title = "Distribution of Evidence Types for Cancer-Related Diseases",
        fill = "Evidence Type") +
-  scale_fill_brewer(palette = "Paired")+
-  theme_minimal()
+  scale_fill_brewer(palette = "Accent")+
+  theme_void()
 ```
 
 
