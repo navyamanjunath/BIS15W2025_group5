@@ -50,7 +50,7 @@ ggplot(pa_variant_disease, aes(x = "", y = percentage, fill = association)) +
   coord_polar("y", start = 0) +
   labs(title = "Association Types between Variant Genes and Diseases",
        fill= "Type of Association") +
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_brewer(palette = "Accent")+
   theme_void()+
   geom_text(aes(label = paste0(round(percentage, 1), "%")),  # Adding percentage labels
             position = position_stack(vjust = 0.5),             # Centers the labels
@@ -84,7 +84,7 @@ variant_disease %>%
        x = "Variant Gene",
        y = "Percentage (%)",
        fill = "Association Type") +
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_brewer(palette = "Accent")+
   theme_light()
 ```
 
@@ -120,7 +120,7 @@ variant_disease %>%
        x = "Disease",
        y = "Percentage (%)",
        fill = "Association Type") +
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_brewer(palette = "Accent")+
   theme_light()
 ```
 
@@ -211,7 +211,7 @@ ggplot(top_5_cancer_disease_evidence_counts_v, aes(x = reorder(entity2_name, n),
        x = "Disease",
        y = "Number of Associations",
        fill = "Evidence Type") +
-  scale_fill_brewer(palette = "Paired")+
+  scale_fill_brewer(palette = "Accent")+
   theme_light()
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
@@ -226,7 +226,7 @@ ggplot(annotation_count_vd, aes(x = evidence, y = count, fill = evidence)) +
        x = "Evidence Type",
        y = "Count")+
     theme(axis.text.x = element_text(angle = 60, hjust = 1))+
-    scale_fill_brewer(palette = "Paired")+
+    scale_fill_brewer(palette = "Accent")+
   theme(legend.position = "none")
 
 #Gives alternate more of quantitative result: how many of these associations are each type of evidence
