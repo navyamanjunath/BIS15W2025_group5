@@ -23,6 +23,11 @@ if(!requireNamespace("BiocManager")){
 BiocManager::install("biomaRt")
 ```
 
+```{r}
+install.packages("visNetwork")
+```
+
+
 ## Load the libraries
 ```{r}
 library(biomaRt)
@@ -32,6 +37,7 @@ library(dplyr)
 library(shiny)
 library(shinydashboard)
 require(janitor)
+library(visNetwork)
 ```
 
 ## Data
@@ -283,7 +289,7 @@ category_counts <- disease_count_v %>%
   count(Category, sort = TRUE)
 
 ggplot(category_counts, aes(x = reorder(Category, n), y = n)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_bar(stat = "identity", fill = "steelblue") + ###CHANGE COLOR
   coord_flip() +
   labs(title = "Disease Categories Associated with Variant Genes",
        x = "Disease Category",
@@ -438,57 +444,79 @@ ggplot(cancer_disease_evidence_counts, aes(x = evidence, y = n, fill = evidence)
 
 # Basically different types of Lymphoma are clinical+variant associated, and carcinoma is variant associated.
 ```
+```{r}
+variant_disease <- relations %>%
+  filter(entity1_type == "Variant", entity2_type == "Disease")
+```
+
 
 ```{r}
 ui <- dashboardPage(
-  skin = ("green"),
+  skin = "green",
   dashboardHeader(title = "Combined Analysis"),
   dashboardSidebar(
     sidebarMenu(
       menuItem("PharmGKB Analysis", tabName = "pharm", icon = icon("chart-pie")),
-      menuItem("Cancer Diseases Analysis", tabName = "cancer", icon = icon("chart-bar"))
+      menuItem("Cancer Analysis", tabName = "cancer", icon = icon("chart-bar")),
+      menuItem("Network Graph", tabName = "network", icon = icon("project-diagram"))
     )
   ),
   dashboardBody(
     tabItems(
-      # PharmGKB Analysis Tab
+      # Tab 1: PharmGKB Analysis
       tabItem(tabName = "pharm",
               fluidRow(
                 box(
                   title = "Comparison Plot Options", 
                   width = 3,
-                  selectInput("x1", 
-                              "Select Entity 1", 
+                  selectInput("x1", "Select Entity 1", 
                               choices = c("Gene", "Haplotype", "Variant", "Disease", "Chemical"), 
                               selected = "Gene"),
-                  selectInput("y1", 
-                              "Select Entity 2", 
+                  selectInput("y1", "Select Entity 2", 
                               choices = c("Gene", "Haplotype", "Variant", "Disease", "Chemical"), 
                               selected = "Disease")
                 ),
                 box(
-                  title = "Percentage of Association Types Plots", 
+                  title = "Percentage of Association Types Plot", 
                   width = 6,
                   plotOutput("plot1", width = "500px", height = "400px")
                 )
               )
       ),
-      # Cancer-related Diseases Analysis Tab
+      # Tab 2: Cancer Analysis
       tabItem(tabName = "cancer",
               fluidRow(
                 box(
-                  title = "Choose type of gene:", 
+                  title = "Choose Dataset for Cancer Analysis", 
                   width = 3,
-                  radioButtons("x2", 
-                              "Select Entity 1", 
-                              choices = c("cancer_disease_evidence_counts_v_rs", 
-                                          "cancer_disease_evidence_counts"), 
-                              selected = "cancer_disease_evidence_counts_v_rs")
+                  radioButtons("x2", "Select Dataset", 
+                               choices = c("cancer_disease_evidence_counts_v_rs", 
+                                           "cancer_disease_evidence_counts_v"), 
+                               selected = "cancer_disease_evidence_counts_v_rs")
                 ),
                 box(
-                  title = "Percentage of Association Types Plots", 
+                  title = "Cancer-Related Diseases vs. Evidence Types", 
                   width = 6,
                   plotOutput("plot2", width = "500px", height = "400px")
+                )
+              )
+      ),
+      # Tab 3: Network Graph 
+      tabItem(tabName = "network",
+              fluidRow(
+                # Radio buttons to choose ABCB1 or rs1045642
+                box(
+                  title = "Network Graph Options",
+                  width = 3,
+                  radioButtons("chosen_entity", "Show network for:",
+                               choices = c("ABCB1", "rs1045642"),
+                               inline = FALSE)
+                ),
+                # The network visualization
+                box(
+                  title = "Interactive Network Graph",
+                  width = 9,
+                  visNetworkOutput("networkGraph", height = "600px")
                 )
               )
       )
@@ -496,15 +524,12 @@ ui <- dashboardPage(
   )
 )
 
-# Combined server function
 server <- function(input, output, session) {
   
-  session$onSessionEnded(stopApp)
-  
-  # PharmGKB Comparison Analysis Plot
+  # Pie Chart
   output$plot1 <- renderPlot({
     pa <- relations %>% 
-      filter(entity1_type == input$x1 & entity2_type == input$y1) %>% 
+      filter(entity1_type == input$x1, entity2_type == input$y1) %>% 
       group_by(association) %>%
       summarise(count = n(), .groups = 'drop') %>%
       mutate(percentage = (count / sum(count)) * 100)
@@ -512,7 +537,8 @@ server <- function(input, output, session) {
     ggplot(pa, aes(x = "", y = percentage, fill = association)) +
       geom_bar(stat = "identity", width = 1) +
       coord_polar("y", start = 0) +
-      labs(fill = "Type of Association") +
+      labs(title = paste(input$x1, "to", input$y1, "Associations"),
+           fill = "Association Type") +
       scale_fill_brewer(palette = "Accent") +
       theme_void() +
       geom_text(aes(label = paste0(round(percentage, 1), "%")),
@@ -520,22 +546,66 @@ server <- function(input, output, session) {
                 color = "white", size = 4)
   })
   
-  # Cancer-related Diseases Analysis Plot
+  #Cancer Analysis Plot
   output$plot2 <- renderPlot({
     data_to_plot <- switch(input$x2,
                            "cancer_disease_evidence_counts_v_rs" = cancer_disease_evidence_counts_v_rs,
-                           "cancer_disease_evidence_counts" = cancer_disease_evidence_counts)
+                           "cancer_disease_evidence_counts_v" = cancer_disease_evidence_counts_v)
     
     ggplot(data_to_plot, aes(x = evidence, y = n, fill = evidence)) +
       geom_bar(stat = "identity") +
-      labs(title = "Cancer-Related Diseases Vs. Evidence Types",
-           x = "Evidence",
-           y = "Number of Associations",
+      labs(title = "Cancer-Related Diseases vs. Evidence Types",
+           x = "Evidence", y = "Number of Associations",
            fill = "Evidence Type") +
       scale_fill_brewer(palette = "Accent") +
       theme_light()
   })
+  
+  
+  output$networkGraph <- renderVisNetwork({
+    
+    
+    netData <- relations %>%
+      filter(
+        entity1_type %in% c("Gene", "Variant"),
+        entity2_type == "Disease",
+        association == "associated",
+        entity1_name == input$chosen_entity
+      )
+    
+    
+    nodes <- data.frame(
+      id = c(input$chosen_entity, unique(netData$entity2_name)),
+      label = c(input$chosen_entity, unique(netData$entity2_name)),
+      stringsAsFactors = FALSE
+    )
+    
+    
+    nodes$label <- sapply(nodes$label, function(x) {
+      paste(strwrap(x, width = 15), collapse = "\n")
+    })
+    
+    
+    edges <- netData %>%
+      select(from = entity1_name, to = entity2_name)
+    
+    
+    visNetwork(nodes, edges) %>%
+      visNodes(
+        shape = "box",
+        labelHighlightBold = TRUE,
+        font = list(size = 14, face = "arial", multi = "md")
+      ) %>%
+      visEdges(arrows = "to", smooth = TRUE) %>%
+      visLayout(randomSeed = 123, improvedLayout = TRUE) %>%
+      visPhysics(stabilization = TRUE) %>%
+      visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+  })
+  
+  
+  session$onSessionEnded(stopApp)
 }
+
 
 shinyApp(ui, server)
 ```
