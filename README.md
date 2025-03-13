@@ -15,7 +15,7 @@
 
 ## <font color="#0066CC">Overview</font>
 
-This repository holds our final project analyzing how genes, variants, and diseases intersect in the [PharmGKB](https://www.pharmgkb.org/) `relationships.tsv` dataset. Our accompanying Google Slides presentation highlights the project’s motivation, methodology, visualizations, and results.
+This repository holds our final project analyzing how genes, variants, and diseases intersect in the [PharmGKB](https://www.pharmgkb.org/) `relationships.tsv` dataset. Our accompanying [presentation](https://docs.google.com/presentation/d/1NAS11obJwFwnLm5t8jDNbPjiQ8sb3igzf-h3GV3sY-s/edit#slide=id.g2582fa11c66_0_310) highlights the project’s motivation, methodology, visualizations, and results.
 
 ### <font color="#2E8B57">Key Topics</font>
 1. **Introduction & Motivation**  
