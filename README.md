@@ -4,12 +4,12 @@
 <h1 style="font-family: Arial, sans-serif;">
   <font color="#0066CC">
     BIS15L Final Project – PharmGKB Relationships
+    <em>By Rithanya Siva, Navya Manjunath, Dennis Chao</em>
   </font>
 </h1>
 
 <p align="center">
   <em>A Shiny application exploring gene, variant, and disease relationships using PharmGKB data.</em>
-  <em>By Rithanya Siva, Navya Manjunath, Dennis Chao</em>
 </p>
 
 ---
