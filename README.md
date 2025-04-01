@@ -9,6 +9,7 @@
 
 <p align="center">
   <em>A Shiny application exploring gene, variant, and disease relationships using PharmGKB data.</em>
+  <em>By Rithanya Siva, Navya Manjunath, Dennis Chao</em>
 </p>
 
 ---
